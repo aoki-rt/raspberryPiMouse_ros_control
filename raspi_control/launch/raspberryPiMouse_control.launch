@@ -1,0 +1,16 @@
+<launch>
+    <rosparam param="use_sim_time">True</rosparam>
+
+    <param name="robot_descriptsion" commmand="$(find xacro)/xacro --inorder '$(find raspberryPi_description)/urdf/raspbeeryPiMouse.urdf.xacro'" />
+
+    <node name="diff_RasPi" pkg="diff_drive_controller" type="diff_RasPi"/>
+
+    <rosparam command="load" file="$(find diff_drive_controller)/test/diffbot_controllers.yaml" />
+
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" output"screen" args="diffbot_controller" />
+    
+    <test test-name="diff_drive_test" pkg="diff_drive_controller" type="diff_drive_test" time-limit="80.0">
+        <remap from="cmd_vel" to ="diffbot_controller/cmd_vel" />
+        <remap from="odom" to="diffbot_controller/odom" />
+    </test>
+</launch>

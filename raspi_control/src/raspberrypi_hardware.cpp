@@ -2,12 +2,60 @@
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
 #include <hardware_interface/robot_hw.h>
+#include <ros/ros.h>
+#include <ros/package.h> 
+#include <signal.h>
+#include "std_srvs/Trigger.h"
+
+bool is_on = false;
+bool callbackOn(std_srvs::Trigger::Request&, std_srvs::Trigger::Response&);
+bool callbackOff(std_srvs::Trigger::Request&, std_srvs::Trigger::Response&);
+void onSigint(int);
+
+bool setPower(bool on)
+{
+        std::ofstream ofs("/dev/rtmotoren0");
+        if(not ofs.is_open())
+                return false;
+
+        ofs << (on ? '1' : '0') << std::endl;
+        is_on = on;
+        return true;
+}
+
+bool callbackOn(std_srvs::Trigger::Request& request, std_srvs::Trigger::Response& response)
+{
+        if(not setPower(true))
+                return false;
+
+        response.message = "ON";
+        response.success = true;
+        return true;
+}
+
+bool callbackOff(std_srvs::Trigger::Request& request, std_srvs::Trigger::Response& response)
+{
+        if(not setPower(false))
+                return false;
+
+        response.message = "OFF";
+        response.success = true;
+        return true;
+}
+
+void onSigint(int sig)
+{
+        setPower(false);
+        exit(0);
+}
+
+
 
 class RaspberryPiHW : public hardware_interface::RobotHW
 {
 public:
     RaspberryPiHW(){
-      ros::NodeHandle pnh("~");
+      ros::NodeHandle pnh;
       std::fill_n(pos,2,0.0);
       std::fill_n(vel,2,0.0);
       std::fill_n(eff,2,0.0);
@@ -28,7 +76,8 @@ public:
 
       registerInterface(&jnt_vel_interface);
 
-      pnh.getParam("wheel_radius",wheel_radius_);
+      pnh.getParam("/Raspimouse/diff_drive_controller/wheel_radius",wheel_radius_);
+      ROS_INFO("wheel_radius=%f:",wheel_radius_);
     }
     ros::Time getTime() const { return ros::Time::now(); }
     ros:: Duration getDuration( ros::Time t) const { return ( ros::Time::now() -t); }
@@ -56,8 +105,8 @@ void RaspberryPiHW::read(ros::Duration d){
 void RaspberryPiHW::write(){
     FILE *motor_l, *motor_r;
     char s_l[10],s_r[10];
-    if((motor_l = fopen("/dev/rtmotor_l0","w")) != NULL &&
-       (motor_r = fopen("/dev/rtmotor_r0","w")) != NULL ){
+    if((motor_l = fopen("/dev/rtmotor_raw_l0","w")) != NULL &&
+       (motor_r = fopen("/dev/rtmotor_raw_r0","w")) != NULL ){
         sprintf(s_l , "%d\n", (int)(cmd[1]*2*3.14159*wheel_radius_/400) );
         sprintf(s_r , "%d\n", (int)(cmd[0]*2*3.14159*wheel_radius_/400) );       
         fputs(s_l , motor_l);
@@ -70,7 +119,15 @@ void RaspberryPiHW::write(){
 int main(int argc,char **argv)
 {
     ros::init(argc,argv,"RaspberryPiMouse");
-    ros::NodeHandle nh;
+    ros::NodeHandle nh,n;
+
+    std::string onoff;
+
+    signal(SIGINT, onSigint);
+    setPower(onoff == "on");
+
+    ros::ServiceServer srv_on = n.advertiseService("motor_on", callbackOn);
+    ros::ServiceServer srv_off = n.advertiseService("motor_off", callbackOff);
 
     RaspberryPiHW raspimouse;
     controller_manager::ControllerManager cm (&raspimouse,nh);

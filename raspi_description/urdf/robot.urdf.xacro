@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <robot name="SimpleMouse" xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:include filename="$(find robot_description)/urdf/body.urdf.xacro" />
-  <xacro:include filename="$(find robot_description)/urdf/wheel.urdf.xacro" />
-  <xacro:include filename="$(find robot_description)/urdf/light_sensor.urdf.xacro" />
+  <xacro:include filename="$(find raspi_description)/urdf/body.urdf.xacro" />
+  <xacro:include filename="$(find raspi_description)/urdf/wheel.urdf.xacro" />
+  <xacro:include filename="$(find raspi_description)/urdf/light_sensor.urdf.xacro" />
   <xacro:wheel rl="r" parent="body" />
   <xacro:wheel rl="l" parent="body" />
   <xacro:gazebo_light_sensor name="left" parent="body" xyz="0.012 0.06 0.03" direction="-${PI/3}" />

@@ -1,16 +1,21 @@
 <launch>
-    <rosparam param="use_sim_time">True</rosparam>
-
-    <param name="robot_descriptsion" commmand="$(find xacro)/xacro --inorder '$(find raspberryPi_description)/urdf/raspbeeryPiMouse.urdf.xacro'" />
-
-    <node name="diff_RasPi" pkg="diff_drive_controller" type="diff_RasPi"/>
-
-    <rosparam command="load" file="$(find diff_drive_controller)/test/diffbot_controllers.yaml" />
-
-    <node name="controller_spawner" pkg="controller_manager" type="spawner" output"screen" args="diffbot_controller" />
-    
-    <test test-name="diff_drive_test" pkg="diff_drive_controller" type="diff_drive_test" time-limit="80.0">
-        <remap from="cmd_vel" to ="diffbot_controller/cmd_vel" />
-        <remap from="odom" to="diffbot_controller/odom" />
-    </test>
+    <param name="Raspimouse/robot_description" command="$(find xacro)/xacro --inorder '$(find raspi_description)/urdf/robot.urdf.xacro'" />
+    <node name="controller_spawer" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/Raspimouse" args="diff_drive_controller joint_state_controller"/>
+<!--    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />--> 
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen" ns="/Raspimouse" >
+      <remap from="/joint_states" to="/Raspimouse/joint_states" />
+    </node>
+    <node name= "RaspberryPiMouse" pkg="raspi_control" type="RasPi_HW" output="screen" respawn="false" ns="/Raspimouse"/> 
+    <rosparam command="load" file="$(find raspi_control)/config/raspberryPiMouse_control.yaml" /> 
+    <include file="$(find raspimouse_ros_examples)/launch/teleop.launch" >
+      <arg name="joy" value="true" />
+      <arg name="mouse" value="false" />
+      <arg name="joyconfig" value="dualshock4" /> 
+   </include> 
+   <node pkg="raspimouse_ros_2" name="buzzer" type="buzzer.py" required="true" />
+  <node pkg="raspimouse_ros_2" name="lightsensors" type="lightsensors" required="true">
+    <param name="frequency" value="10" />
+  </node>
+  <node pkg="raspimouse_ros_2" name="leds" type="leds" required="true" />
+  <node pkg="raspimouse_ros_2" name="buttons" type="buttons" required="true" /> 
 </launch>

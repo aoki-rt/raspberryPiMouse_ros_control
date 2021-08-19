@@ -100,20 +100,23 @@ void RaspberryPiHW::read(ros::Duration d){
     vel[0] = cmd[0];
     pos[1] += vel[1]*d.sec;
     vel[1] = cmd[1];
+    ROS_INFO("cmd=%f %f %f %f",vel[0],vel[1],pos[0],pos[1]);
 };
 
 void RaspberryPiHW::write(){
-    FILE *motor_l, *motor_r;
-    char s_l[10],s_r[10];
-    if((motor_l = fopen("/dev/rtmotor_raw_l0","w")) != NULL &&
-       (motor_r = fopen("/dev/rtmotor_raw_r0","w")) != NULL ){
-        sprintf(s_l , "%d\n", (int)(cmd[1]*2*3.14159*wheel_radius_/400) );
-        sprintf(s_r , "%d\n", (int)(cmd[0]*2*3.14159*wheel_radius_/400) );       
-        fputs(s_l , motor_l);
-        fputs(s_r , motor_r);
+int left,right;
+    std::ofstream ofsL("/dev/rtmotor_raw_l0");
+    std::ofstream ofsR("/dev/rtmotor_raw_r0");
+    if( (not ofsL.is_open()) or (not ofsR.is_open()) ){
+            ROS_ERROR("Cannot open /dev/rtmotor_raw_{l,r}0");
+            return;
     }
-    fclose(motor_l);
-    fclose(motor_r);
+
+    left = (int)round(cmd[1]/(2.0*3.14159*wheel_radius_/400.0)/1000*24);
+    right = (int)round(cmd[0]/(2.0*3.14159*wheel_radius_/400.0)/1000*24);
+    ROS_INFO("left=%d right=%d %f ",left,right,wheel_radius_);
+    ofsL << left << std::endl;
+    ofsR << right << std::endl;
 };
 
 int main(int argc,char **argv)
@@ -122,9 +125,10 @@ int main(int argc,char **argv)
     ros::NodeHandle nh,n;
 
     std::string onoff;
+    onoff = "off";
+    setPower(onoff == "on");
 
     signal(SIGINT, onSigint);
-    setPower(onoff == "on");
 
     ros::ServiceServer srv_on = n.advertiseService("motor_on", callbackOn);
     ros::ServiceServer srv_off = n.advertiseService("motor_off", callbackOff);

@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<robot name="SimpleMouse" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find raspi_description)/urdf/body.urdf.xacro" />
+  <xacro:include filename="$(find raspi_description)/urdf/wheel.urdf.xacro" />
+  <xacro:include filename="$(find raspi_description)/urdf/light_sensor.urdf.xacro" />
+  <xacro:wheel rl="r" parent="body" />
+  <xacro:wheel rl="l" parent="body" />
+  <xacro:gazebo_light_sensor name="left" parent="body" xyz="0.012 0.06 0.03" direction="-${PI/3}" />
+  <xacro:gazebo_light_sensor name="right" parent="body" xyz="-0.012 0.06 0.03" direction="${PI/3}" />
+  <xacro:gazebo_light_sensor name="front_left" parent="body" xyz="0.0325 0.04 0.03" direction="0" />
+  <xacro:gazebo_light_sensor name="front_right" parent="body" xyz="-0.0325 0.04 0.03" direction="0" />
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>RaspberryPiMouse</robotNamespace>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+    </plugin>
+  </gazebo> 
+  <transmission name="trans1">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="wheel_r_joint">
+      <hardwareInterface>VelocityJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="wheel_r_motor">
+      <hardwareInterface>VelocityJointInterface</hardwareInterface>
+      <mechanismReduction>1</mechanismReduction>
+    </actuator>
+  </transmission>
+  <transmission name="tran2">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="wheel_l_joint">
+      <hardwareInterface>VelocityJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="wheel_l_motor">
+      <hardwareInterface>VelocityJointInterface</hardwareInterface>
+      <mechanismReduction>1</mechanismReduction>
+    </actuator>
+  </transmission>
+</robot>
+

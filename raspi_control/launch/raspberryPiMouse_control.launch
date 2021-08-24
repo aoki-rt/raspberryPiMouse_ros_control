@@ -1,5 +1,5 @@
 <launch>
-    <param name="Raspimouse/robot_description" command="$(find xacro)/xacro --inorder '$(find raspi_description)/urdf/robot.urdf.xacro'" />
+    <param name="Raspimouse/robot_description" command="$(find xacro)/xacro --inorder '$(find raspi_description)/urdf/robot_no_diff.urdf.xacro'" />
     <rosparam command="load" file="$(find raspi_control)/config/raspberryPiMouse_control.yaml" />
     <group ns="Raspimouse">
 <!-- raspimouse_ros_2 --> 

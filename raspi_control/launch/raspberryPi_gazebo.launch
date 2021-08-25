@@ -1,0 +1,7 @@
+<launch>
+    <param name="Raspimouse/robot_description" command="$(find xacro)/xacro --inorder '$(find raspi_description)/urdf/robot_no_diff.urdf.xacro'" />
+    <group ns="Raspimouse">
+        <include file="$(find gazebo_ros)/launch/empty_world.launch" />
+        <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model SimpleMouse" />
+    </group>
+</launch>

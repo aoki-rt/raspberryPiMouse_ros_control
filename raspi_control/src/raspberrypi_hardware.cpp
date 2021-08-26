@@ -96,11 +96,11 @@ private:
 };
 
 void RaspberryPiHW::read(ros::Duration d){
-    pos[0] += vel[0]*d.sec;
+    pos[0] += vel[0]*d.nsec/1000000000;
     vel[0] = cmd[0];
-    pos[1] += vel[1]*d.sec;
+    pos[1] += vel[1]*d.nsec/1000000000;
     vel[1] = cmd[1];
-    ROS_INFO("cmd=%f %f %f %f",vel[0],vel[1],pos[0],pos[1]);
+//    ROS_INFO("cmd=%u %f %f  %f %f",d.nsec,cmd[0],cmd[1],pos[0],pos[1]);
 };
 
 void RaspberryPiHW::write(){
@@ -114,7 +114,7 @@ int left,right;
 
     left = (int)round(cmd[1]/(2.0*3.14159*wheel_radius_/400.0)/1000*24);
     right = (int)round(cmd[0]/(2.0*3.14159*wheel_radius_/400.0)/1000*24);
-    ROS_INFO("left=%d right=%d %f ",left,right,wheel_radius_);
+//    ROS_INFO("left=%d right=%d %f ",left,right,wheel_radius_);
     ofsL << left << std::endl;
     ofsR << right << std::endl;
 };
@@ -147,6 +147,7 @@ int main(int argc,char **argv)
     d=ros::Time::now() -t;
     t=ros::Time::now();
 
+//     ROS_INFO("read %u %u ",d.nsec,t.nsec);
     raspimouse.read(d );
     cm.update(t,d);
     raspimouse.write( );

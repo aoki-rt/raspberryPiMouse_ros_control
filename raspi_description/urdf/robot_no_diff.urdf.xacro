@@ -11,10 +11,9 @@
   <xacro:gazebo_light_sensor name="front_right" parent="body" xyz="-0.0325 0.04 0.03" direction="0" />
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <robotNamespace>RaspberryPiMouse</robotNamespace>
-      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+      <robotNamespace>Raspimouse</robotNamespace>
     </plugin>
-  </gazebo> 
+  </gazebo>
   <transmission name="trans1">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="wheel_r_joint">

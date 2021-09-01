@@ -6,6 +6,7 @@ Raspimouse:
     type: "diff_drive_controller/DiffDriveController"
     left_wheel: 'wheel_r_joint'
     right_wheel: 'wheel_l_joint'
+    #    pid: {p: 100.0, i: 0.01, d: 10.0} 
     wheel_radius: 0.024
     wheel_separation : 0.08
     pose_covariance_diagonal: [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 1000.0]

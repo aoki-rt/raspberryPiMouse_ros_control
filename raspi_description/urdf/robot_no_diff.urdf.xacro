@@ -2,10 +2,10 @@
 <robot name="SimpleMouse" xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:include filename="$(find raspi_description)/urdf/body.urdf.xacro" />
   <xacro:include filename="$(find raspi_description)/urdf/wheel.urdf.xacro" />
-  <xacro:include filename="$(find raspi_description)/urdf/light_sensor.urdf.xacro" />
+<!--  <xacro:include filename="$(find raspi_description)/urdf/light_sensor.urdf.xacro" /> -->
   <xacro:wheel rl="r" parent="body" />
   <xacro:wheel rl="l" parent="body" />
-  <xacro:gazebo_light_sensor name="left" parent="body" xyz="0.012 0.06 0.03" direction="-${PI/3}" />
+<!--  <xacro:gazebo_light_sensor name="left" parent="body" xyz="0.012 0.06 0.03" direction="-${PI/3}" />
   <xacro:gazebo_light_sensor name="right" parent="body" xyz="-0.012 0.06 0.03" direction="${PI/3}" />
   <xacro:gazebo_light_sensor name="front_left" parent="body" xyz="0.0325 0.04 0.03" direction="0" />
   <xacro:gazebo_light_sensor name="front_right" parent="body" xyz="-0.0325 0.04 0.03" direction="0" />
@@ -13,7 +13,13 @@
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
       <robotNamespace>Raspimouse</robotNamespace>
     </plugin>
-  </gazebo>
+    <plugin name="ground_truth" filename="libgazebo_ros_p3d.so">
+      <frameName>world</frameName>
+      <bodyName>base_link</bodyName>
+      <topicName>/tracker</topicName>
+      <updateRate>10.0</updateRate>
+    </plugin>
+  </gazebo> -->
   <transmission name="trans1">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="wheel_r_joint">

@@ -12,3 +12,4 @@ Raspimouse:
     pose_covariance_diagonal: [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 1000.0]
     twist_covariance_diagonal: [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 1000.0]
     cmd_vel_timeout: 20.0 #we test this spearately, give plenty for the other test
+    base_frame_id: base_link
